@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GSA:Cross-Instance Gaussian Splatting Registration via
+        Geometry-Aware Feature-Guided Alignment">
+  <meta name="keywords" content="Cross-Instance Gaussian Splatting Registration via
+Geometry-Aware Feature-Guided Alignment">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Cross-Instance Gaussian Splatting Registration via
+    Geometry-Aware Feature-Guided Alignment</title>
+
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+  </script>
+
+  <script
+  defer
+  src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"
+  ></script>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"
+  />
+
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+  <link rel="image_src" href="./media/pipeline.png">
+  
+
+  <style>
+    .before,
+    .after {
+      margin: 0;
+    }
+  
+    .before figcaption,
+    .after figcaption {
+      background: #fff;
+      border: 1px solid #c0c0c0;
+      border-radius: 4px;
+      color: #2e3452;
+      opacity: 0.8;
+      padding: 4px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      line-height: 70%;
+    }
+  
+    .before figcaption {
+      left: 4px;
+    }
+  
+    .after figcaption {
+      right: 4px;
+    }
+  </style>
+
+<style>
+  .button-container_teaser {
+      display: flex;       
+      justify-content: center; 
+      align-items: center;
+  }
+
+  .glow-button {
+      position: relative;
+      display: inline-block;
+      padding: 2px;
+      border-radius: 10px;
+      z-index: 0;
+      margin-bottom: 15px;
+  }
+
+  .glow-button button {
+      background: transparent; 
+      border: none; 
+      color: white; 
+      padding: 5px 10px; 
+      font-size: 16px; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      outline: none; 
+  }
+
+  .glow-button:before {
+      content: "";
+      background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      background-size: 400%;
+      z-index: -1;
+      filter: blur(5px);
+      -webkit-filter: blur(5px);
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      animation: glowing-button-85 20s linear infinite;
+      transition: opacity 0.3s ease-in-out;
+      border-radius: 10px;
+  }
+
+  @keyframes glowing-button-85 {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+  }
+
+  .glow-button:after {
+      z-index: -1;
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #222;
+      left: 0;
+      top: 0;
+      border-radius: 10px;
+  }
+</style>
+
+<style>
+  .container_teaser {
+      display: flex; /* Enables Flexbox */
+      justify-content: center; /* Horizontally centers the content */
+      align-items: center; /* Vertically centers the content */
+      height: 100%; /* Set the height of the container */
+  }
+
+  .column_teaser {
+      flex: 0 0 auto; /* This ensures that the column doesn't grow or shrink */
+      width: 100%; /* Adjust this width as needed */
+      max-width: 800px; /* Adjust this max-width as needed */
+      margin: 0 auto; /* Centers the column within the container */
+  }
+</style>
+  <script
+  defer
+  src="./static/js/image-comparison-slider.js"
+  ></script>
+  <link
+    rel="stylesheet"
+    href="./static/css/image-comparison-slider.css"
+  />
+
+</head>
+<body>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">GSA</h1>
+          <h1 class="title is-2 publication-title">Cross-Instance Gaussian Splatting Registration via
+            Geometry-Aware Feature-Guided Alignment</h1>
+            <p style="text-align: center; font-size: 1.2em; margin-top: 20px;">
+              This webpage contains 3D visualizations of the constructed augmented 3DGS models and results of the alignment method proposed in our paper.
+              <br>
+              <b>Please Note:</b> If the videos are not synchronized, it may be due to browser limitations or slow page loading caused by low resources (such as a phone). We recommend opening it in Google Chrome on a regular PC.
+
+            </p>
+            <style>
+              .author-block {
+                  margin-right: 10px;
+              }
+            </style>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="">Anonymous</a><sup>1</sup>,</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="teaser">
+  <div class="container_teaser is-max-desktop">
+    <div class="column_teaser">
+        <!-- First Slider -->
+        <div id="slider1-container_teaser">
+            <img-comparison-slider id="slider1">
+                <figure slot="first" class="before">
+                    <img height="100%" width="100%" src="./media/teaser/output_orig_teaser.gif">
+                    <figcaption style="text-align: center;">Radiance Field of <br> Two GSA-Aligned <br>Airplanes </figcaption>
+                </figure>
+                <figure slot="second" class="after" id="gif-2">
+                    <img height="100%" width="100%" src="./media/teaser/output_features_teaser.gif">
+                    <figcaption style="text-align: center;">3D Geometric <br> Semantic Features</figcaption>
+                </figure>
+            </img-comparison-slider>
+        </div>
+
+        <!-- Second Slider, initially hidden -->
+        <div id="slider2-container_teaser" style="display: none;">
+            <img-comparison-slider id="slider2">
+                <figure slot="first" class="before" id="gif-3">
+                    <img height="100%" width="100%" src="./media/objects_features/output_orig_truck.gif">
+                    <figcaption style="text-align: center;" >Radiance Field of <br> Single Object </figcaption>
+                </figure>
+                <figure slot="second" class="after" id="gif-4">
+                    <img height="100%" width="100%" src="./media/objects_features/output_features_truck.gif">
+                    <figcaption  style="text-align: center;" >3D Geometric <br> Semantic Features</figcaption>
+                </figure>
+            </img-comparison-slider>
+        </div>
+        <div class="button-container_teaser">
+          <div class="glow-button">
+              <button id="toggle-slider">Switch Object</button>
+          </div>
+        </div>
+        <h2 class="subtitle has-text-centered">
+          GSA is the first to tackle category-level registration in 3D Gaussian Splatting, leveraging geometry-aware features and a two-step optimization to enable cross-instance alignment.
+            </h2>        
+    </div>
+</div>
+
+</section>
+<br>
+<br>
+<h3 class="title is-4 has-text-centered"><strong>Synchronized Novel View Synthesis</strong></h3>
+<p class="has-text-centered"><strong>
+  Our registration method enables the alignment of different 3DGS models within the same category.
+  This approach is effective for both synthetic and real scenes, unlocking new possibilities such as synchronized novel view synthesis and enabling multi-view consistent object replacement.
+</strong></p>
+
+<div class="sync-novel-view-container">
+  <div class="column">
+    <h2 class="title is-6">Real Scene</h2>
+    <div>
+      <img-comparison-slider>
+        <figure slot="first" class="before">
+          <img class="sync-gif" src="./media/sync_novel_view/output_orig_red.gif">
+        </figure>
+        <figure slot="second" class="after">
+          <img class="sync-gif" src="./media/sync_novel_view/output_features_red.gif">
+        </figure>
+      </img-comparison-slider>
+    </div>
+  </div>
+
+  <div class="column">
+    <h2 class="title is-6">Real Scene</h2>
+    <div>
+      <img-comparison-slider>
+        <figure slot="first" class="before">
+          <img class="sync-gif" src="./media/sync_novel_view/output_orig42.gif">
+        </figure>
+        <figure slot="second" class="after">
+          <img class="sync-gif" src="./media/sync_novel_view/output_features42.gif">
+        </figure>
+      </img-comparison-slider>
+    </div>
+  </div>
+
+  <div class="column">
+    <h2 class="title is-6">Synthetic Scene</h2>
+    <div>
+      <img-comparison-slider>
+        <figure slot="first" class="before">
+          <img class="sync-gif" src="./media/sync_novel_view/output_orig_police.gif">
+        </figure>
+        <figure slot="second" class="after">
+          <img class="sync-gif" src="./media/sync_novel_view/output_features_police.gif">
+        </figure>
+      </img-comparison-slider>
+    </div>
+  </div>
+
+  <div class="column">
+    <h2 class="title is-6">Synthetic Scene</h2>
+    <div>
+      <img-comparison-slider>
+        <figure slot="first" class="before">
+          <img class="sync-gif" src="./media/sync_novel_view/output_origsynth1.gif">
+        </figure>
+        <figure slot="second" class="after">
+          <img class="sync-gif" src="./media/sync_novel_view/output_featuressynth1.gif">
+        </figure>
+      </img-comparison-slider>
+    </div>
+  </div>
+</div>
+
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Source code borrowed from <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleSliders() {
+      // Get both slider containers
+      var slider1 = document.getElementById("slider1-container_teaser");
+      var slider2 = document.getElementById("slider2-container_teaser");
+
+      // Toggle visibility
+      if (slider1.style.display === "none") {
+          slider1.style.display = "block";
+          slider2.style.display = "none";
+      } else {
+          slider1.style.display = "none";
+          slider2.style.display = "block";
+      }
+  }
+</script>
+
+</body>
+</html>
